@@ -5,10 +5,9 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        String csvFile = "C:\\Users\\gokat\\IdeaProjects\\MVP-managment-system\\src\\Items.csv";
+        String csvFile = "/Users/kathirdev/Documents/GitHub/MVP-managment-system/src/Item";
 
-
-        Map<String, Boolean> dataMap = new HashMap<>();
+        Map<String, String> hm = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             String line;
@@ -20,9 +19,8 @@ public class Main {
                 if (columns.length == 2) {
                     // Add data to the HashMap
                     String key = columns[0].trim();
-                    // Convert the second column to a boolean
-                    boolean value = Boolean.parseBoolean(columns[1].trim());
-                    dataMap.put(key, value);
+                    String value = columns[1].trim();
+                    hm.put(key, value);
                 } else {
                     System.out.println("Skipping invalid CSV line: " + line);
                 }
@@ -31,51 +29,73 @@ public class Main {
             e.printStackTrace();
         }
 
-        menu();
-
         int option;
         do {
+            menu();
             option = sc.nextInt();
 
 
             switch (option) {
                 case 1:
                     System.out.println("What item do you want to checkout: ");
-
                     try {
-                        String checkout = sc.nextLine();  // Use nextLine() for string input
+                        String checkout = sc.nextLine();
+                        checkout = sc.nextLine();
 
-                        if (!(checkout.length() < 10)) {
-                            System.out.println(checkout);
-
-                            if (dataMap.containsKey(checkout)) {
-                                if (dataMap.get(checkout)) {
-                                    // Item is available, mark it as checked out
-                                    dataMap.replace(checkout, false);
-                                    System.out.println("Item checked out");
-                                } else {
-                                    // Item is already checked out
-                                    System.out.println("Item has been checked out");
-                                }
+                        if (hm.containsKey(checkout)) {
+                            String value = hm.get(checkout);
+                            if ("in".equalsIgnoreCase(value)) {
+                                // Item is available, mark it as checked out
+                                hm.replace(checkout, "out");
+                                System.out.println("Item checked out");
                             } else {
-                                // Item not found in the inventory
-                                System.out.println("Item not found");
+                                // Item is already checked out
+                                System.out.println("Item has been checked out");
                             }
+                        } else {
+                            // Item not found in the inventory
+                            System.out.println("Item not found");
                         }
-                    } catch (java.util.InputMismatchException e) {
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a valid string.");
+                        // Handle the exception (you might want to clear the scanner buffer or take appropriate action)
+                    } catch (Exception e) {
+                        System.out.println("An unexpected error occurred: " + e.getMessage());
+                    }
+                        // Handle other unexpected exceptions if needed
+                    break;
+                case 2:
+                    System.out.println("What item do you want to return: ");
+                    try {
+                        String returnItem = sc.nextLine();
+                        returnItem = sc.nextLine();
+
+                        if (hm.containsKey(returnItem)) {
+                            String value = hm.get(returnItem);
+                            if ("out".equalsIgnoreCase(value)) {
+                                // Item is checked out, mark it as returned
+                                hm.replace(returnItem, "in");
+                                System.out.println("Item returned");
+                            } else {
+                                // Item is not checked out
+                                System.out.println("Item is not checked out");
+                            }
+                        } else {
+                            // Item not found in the inventory
+                            System.out.println("Item not found");
+                        }
+                    } catch (InputMismatchException e) {
                         System.out.println("Invalid input. Please enter a valid string.");
                         // Handle the exception (you might want to clear the scanner buffer or take appropriate action)
                     } catch (Exception e) {
                         System.out.println("An unexpected error occurred: " + e.getMessage());
                         // Handle other unexpected exceptions if needed
                     }
-                    break;
-                case 2:
 
                     break;
                 case 3:
-                    for (Map.Entry<String, Boolean> entry : dataMap.entrySet()) {
-                        System.out.println(entry.getKey() + entry.getValue());
+                    for (Map.Entry<String, String> entry : hm.entrySet()) {
+                        System.out.println(entry.getKey() + ", " + entry.getValue());
                     }
                     break;
                 case 4:
