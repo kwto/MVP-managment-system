@@ -5,7 +5,8 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        String csvFile = "/Users/kathirdev/Documents/GitHub/MVP-managment-system/src/Item";
+        String csvFile = "src/Items.csv";
+        File Items = new File(csvFile);
 
         Map<String, String> hm = new HashMap<>();
 
@@ -28,6 +29,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         int option;
         do {
@@ -99,6 +101,23 @@ public class Main {
                     }
                     break;
                 case 4:
+                    try {
+                    Items.delete();
+                    BufferedWriter writer = new BufferedWriter(new FileWriter("src/Items.csv"));
+
+                        System.out.println("Updating file...");
+                        for (String key : hm.keySet()) {
+                            System.out.print(key + "," + hm.get(key) + "\n");
+                            writer.write(key + "," + hm.get(key) + "\n");
+                        }
+                        System.out.println("Updated file");
+                        writer.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    break;
+                case 5:
                     sc.close();
                     System.exit(0);
                     break;
@@ -108,7 +127,7 @@ public class Main {
                     break;
             }
         }
-        while (option != 4);
+        while (option != 5);
 
 
     }
@@ -117,7 +136,8 @@ public class Main {
         System.out.println("1. Checkout");
         System.out.println("2. Return");
         System.out.println("3. List");
-        System.out.println("4. Exit");
+        System.out.println("4. Update");
+        System.out.println("5. Exit");
         System.out.print("Enter your choice: ");
     }
 }
