@@ -141,11 +141,3 @@ public class Main {
         System.out.print("Enter your choice: ");
     }
 }
-
-
-
-//        // Now you have the data in the HashMap, you can use it as needed
-//        // For example, printing the contents
-//        for (Map.Entry<String, String> entry : dataMap.entrySet()) {
-//            System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-//        }
