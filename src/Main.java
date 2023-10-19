@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        String csvFile = "src/Items.csv";
+        String csvFile = "src/Data/Items.csv";
         File Items = new File(csvFile);
 
         Map<String, String> hm = new HashMap<>();
@@ -103,7 +103,7 @@ public class Main {
                 case 4:
                     try {
                     Items.delete();
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("src/Items.csv"));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter("src/Data/Items.csv"));
 
                         System.out.println("Updating file...");
                         for (String key : hm.keySet()) {
@@ -128,8 +128,6 @@ public class Main {
             }
         }
         while (option != 5);
-
-
     }
     public static void menu(){
         System.out.println("----MENU----");
