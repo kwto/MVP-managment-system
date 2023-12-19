@@ -2,26 +2,47 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    private static final String CSV_FILE = "src/Data/Items.csv";
+    private static final Map<String, String> inventory = new HashMap<>();
+
     public static void main(String[] args) {
+        loadInventory();
 
-        Scanner sc = new Scanner(System.in);
-        String csvFile = "src/Data/Items.csv";
-        File Items = new File(csvFile);
+        int option;
+        do {
+            displayMenu();
+            Scanner sc = new Scanner(System.in);
+            option = sc.nextInt();
 
-        Map<String, String> hm = new HashMap<>();
+            switch (option) {
+                case 1:
+                    checkoutItem(sc);
+                    break;
+                case 2:
+                    returnItem(sc);
+                    break;
+                case 3:
+                    listInventory();
+                    break;
+                case 4:
+                    saveAndExit();
+                    break;
+                default:
+                    System.out.println("Invalid choice, try again.");
+                    break;
+            }
+        } while (option != 4);
+    }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+    private static void loadInventory() {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                // Split the CSV line into columns
                 String[] columns = line.split(",");
-
-                // Assuming there are two columns in your CSV
                 if (columns.length == 2) {
-                    // Add data to the HashMap
                     String key = columns[0].trim();
                     String value = columns[1].trim();
-                    hm.put(key, value);
+                    inventory.put(key, value);
                 } else {
                     System.out.println("Skipping invalid CSV line: " + line);
                 }
@@ -29,113 +50,85 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        int option;
-        do {
-            menu();
-            option = sc.nextInt();
-
-
-            switch (option) {
-                case 1:
-                    System.out.println("What item do you want to checkout: ");
-                    try {
-                        String checkout = sc.nextLine();
-                        checkout = sc.nextLine();
-
-                        if (hm.containsKey(checkout)) {
-                            String value = hm.get(checkout);
-                            if ("in".equalsIgnoreCase(value)) {
-                                // Item is available, mark it as checked out
-                                hm.replace(checkout, "out");
-                                System.out.println("Item checked out");
-                            } else {
-                                // Item is already checked out
-                                System.out.println("Item has been checked out");
-                            }
-                        } else {
-                            // Item not found in the inventory
-                            System.out.println("Item not found");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please enter a valid string.");
-                        // Handle the exception (you might want to clear the scanner buffer or take appropriate action)
-                    } catch (Exception e) {
-                        System.out.println("An unexpected error occurred: " + e.getMessage());
-                    }
-                        // Handle other unexpected exceptions if needed
-                    break;
-                case 2:
-                    System.out.println("What item do you want to return: ");
-                    try {
-                        String returnItem = sc.nextLine();
-                        returnItem = sc.nextLine();
-
-                        if (hm.containsKey(returnItem)) {
-                            String value = hm.get(returnItem);
-                            if ("out".equalsIgnoreCase(value)) {
-                                // Item is checked out, mark it as returned
-                                hm.replace(returnItem, "in");
-                                System.out.println("Item returned");
-                            } else {
-                                // Item is not checked out
-                                System.out.println("Item is not checked out");
-                            }
-                        } else {
-                            // Item not found in the inventory
-                            System.out.println("Item not found");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please enter a valid string.");
-                        // Handle the exception (you might want to clear the scanner buffer or take appropriate action)
-                    } catch (Exception e) {
-                        System.out.println("An unexpected error occurred: " + e.getMessage());
-                        // Handle other unexpected exceptions if needed
-                    }
-
-                    break;
-                case 3:
-                    for (Map.Entry<String, String> entry : hm.entrySet()) {
-                        System.out.println(entry.getKey() + ", " + entry.getValue());
-                    }
-                    break;
-                case 4:
-                    try {
-                    Items.delete();
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("src/Data/Items.csv"));
-
-                        System.out.println("Updating file...");
-                        for (String key : hm.keySet()) {
-                            System.out.print(key + "," + hm.get(key) + "\n");
-                            writer.write(key + "," + hm.get(key) + "\n");
-                        }
-                        System.out.println("Updated file");
-                        writer.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    break;
-                case 5:
-                    sc.close();
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invaild choice try again.");
-                    menu();
-                    break;
-            }
-        }
-        while (option != 5);
     }
-    public static void menu(){
+
+    private static void checkoutItem(Scanner sc) {
+        System.out.print("What item do you want to checkout: ");
+        try {
+            String checkout = sc.nextLine();
+            checkout = sc.nextLine();
+
+            if (inventory.containsKey(checkout)) {
+                String value = inventory.get(checkout);
+                if ("in".equalsIgnoreCase(value)) {
+                    inventory.replace(checkout, "out");
+                    System.out.println("Item checked out");
+                    updateInventory();
+                } else {
+                    System.out.println("Item has been checked out");
+                }
+            } else {
+                System.out.println("Item not found in the inventory");
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid string.");
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private static void returnItem(Scanner sc) {
+        System.out.print("What item do you want to return: ");
+        try {
+            String returnItem = sc.nextLine();
+            returnItem = sc.nextLine();
+
+            if (inventory.containsKey(returnItem)) {
+                String value = inventory.get(returnItem);
+                if ("out".equalsIgnoreCase(value)) {
+                    inventory.replace(returnItem, "in");
+                    System.out.println("Item returned");
+                    updateInventory();
+                } else {
+                    System.out.println("Item is not checked out");
+                }
+            } else {
+                System.out.println("Item not found in the inventory");
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid string.");
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private static void listInventory() {
+        for (Map.Entry<String, String> entry : inventory.entrySet()) {
+            System.out.println(entry.getKey() + ", " + entry.getValue());
+        }
+    }
+
+    private static void updateInventory() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CSV_FILE))) {
+            for (String key : inventory.keySet()) {
+                writer.write(key + "," + inventory.get(key) + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void saveAndExit() {
+        updateInventory();
+        System.exit(0);
+    }
+
+    private static void displayMenu() {
         System.out.println("----MENU----");
         System.out.println("1. Checkout");
         System.out.println("2. Return");
         System.out.println("3. List");
-        System.out.println("4. Update");
-        System.out.println("5. Exit");
+        System.out.println("4. Exit");
         System.out.print("Enter your choice: ");
     }
 }
