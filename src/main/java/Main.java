@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    private static final String CSV_FILE = "src/Data/Items.csv";
+    private static final String CSV_FILE = "src/main/java/Data/Items.csv";
     private static final Map<String, String> inventory = new HashMap<>();
 
     public static void main(String[] args) {
